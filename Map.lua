@@ -1,4 +1,6 @@
 require 'Util'
+require 'Player'
+
 
 Map = Class{}
 
@@ -15,6 +17,7 @@ MUSHROOM_TOP = 10
 MUSHROOM_BOTTOM = 11
 
 JUMP_BLOCK = 5
+JUMP_BLOCK_HIT = 9
 
 local SCROLL_SPEED = 62
 
@@ -52,23 +55,35 @@ function Map:init()
         if math.random(20) == 1 then
             self:setTile(x, self.mapHeight / 2 -2, MUSHROOM_TOP)
             self:setTile(x, self.mapHeight / 2 -1, MUSHROOM_BOTTOM)
+            self:fillFloor(x)
             x = x + 1
         elseif math.random(10) == 1 and x < self.mapWidth - 3 then
             local bushLevel = self.mapHeight / 2 -1
             self:setTile(x, bushLevel, BUSH_LEFT)
+            self:fillFloor(x)
             x = x + 1
             self:setTile(x, bushLevel, BUSH_RIGHT)
+            self:fillFloor(x)
             x = x + 1
-        elseif math.random(10) == 1 then
+        elseif math.random(10) <= 9 then
+            self:fillFloor(x)
             if math.random(15) == 1 then
                 self:setTile(x, self.mapHeight / 2 - 4, JUMP_BLOCK)
             end
             x = x + 1
         else
-            x = x + 2
+            -- self:fillFloor(x)
+            x = x + 1
         end
     end
-    self:createFloor()
+    -- self:createFloor()
+    self.player = Player(self)
+end
+
+function Map:fillFloor(x)
+    for y = self.mapHeight / 2, self.mapHeight do
+        self:setTile(x, y, TILE_BRICK)
+    end
 end
 
 function Map:createFloor()
@@ -78,6 +93,7 @@ function Map:createFloor()
         end
     end
 end
+
 
 
 function Map:getIndex(x, y)
@@ -108,6 +124,7 @@ function Map:update(dt)
         -- right
         self.camX = math.min(self.mapWidthPixels - VIRTUAL_WIDTH, math.floor(self.camX + SCROLL_SPEED * dt))
     end
+    self.player:update(dt)
 end
 
 function Map:render()
@@ -121,4 +138,5 @@ function Map:render()
             end
         end
     end
+    self.player:render()
 end
