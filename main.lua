@@ -34,6 +34,9 @@ function love.load()
         vsync = true
     })
 
+    love.keyboard.keysPressed = {}
+    love.keyboard.keysReleased = {}
+
 end
 
 --[[
@@ -41,6 +44,7 @@ end
 ]]
 function love.update(dt)
     map:update(dt)
+    love.keyboard.keysPressed = {}
 end
 
 --[[
@@ -51,7 +55,7 @@ function love.draw()
     -- it clears the screen with the defined collor
     love.graphics.clear(108 / 255, 140 / 255, 1, 1)
 
-    love.graphics.translate(math.floor(-map.camX * 0.5), math.floor(-map.camY + 0.5))
+    love.graphics.translate(math.floor(-map.camX + 0.5), math.floor(-map.camY + 0.5))
 
     -- love.graphics.printf('Welcome to Mario!', 0, 30, VIRTUAL_WIDTH, 'center')
 
@@ -65,6 +69,18 @@ end
 function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
+    end
+    love.keyboard.keysPressed[key] = true
+end
+
+--[[
+    return true when the defined key was pressed after the last update
+]]
+function love.keyboard.wasPressed(key)
+    if (love.keyboard.keysPressed[key]) then
+        return true
+    else
+        return false
     end
 end
 
