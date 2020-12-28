@@ -65,14 +65,13 @@ function Map:init()
             self:setTile(x, bushLevel, BUSH_RIGHT)
             self:fillFloor(x)
             x = x + 1
-        elseif math.random(10) <= 9 then
+        elseif math.random(10) ~= 1 then -- not equal 1
             self:fillFloor(x)
             if math.random(15) == 1 then
                 self:setTile(x, self.mapHeight / 2 - 4, JUMP_BLOCK)
             end
             x = x + 1
         else
-            -- self:fillFloor(x)
             x = x + 1
         end
     end
@@ -110,6 +109,13 @@ end
 
 
 function Map:update(dt)
+    self.camX = math.max(0,
+        math.min(self.player.x - VIRTUAL_WIDTH / 2,
+            math.min(self.mapWidthPixels - VIRTUAL_WIDTH, self.player.x)
+        )
+    )
+    
+    --[[
     -- check up, left, down, right movement
     if love.keyboard.isDown('w') then
         -- up
@@ -124,6 +130,7 @@ function Map:update(dt)
         -- right
         self.camX = math.min(self.mapWidthPixels - VIRTUAL_WIDTH, math.floor(self.camX + SCROLL_SPEED * dt))
     end
+    ]]
     self.player:update(dt)
 end
 
