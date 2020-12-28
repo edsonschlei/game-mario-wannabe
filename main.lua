@@ -4,7 +4,6 @@
 
 Class = require 'class'
 push = require 'push'
-require 'Util'
 require 'Map'
 
 WINDOW_WIDTH = 1280
@@ -40,7 +39,7 @@ end
     update game status
 ]]
 function love.update(dt)
-
+    map:update(dt)
 end
 
 --[[
@@ -51,7 +50,9 @@ function love.draw()
     -- it clears the screen with the defined collor
     love.graphics.clear(108 / 255, 140 / 255, 1, 1)
 
-    love.graphics.printf('Welcome to Mario!', 0, 30, VIRTUAL_WIDTH, 'center')
+    love.graphics.translate(math.floor(-map.camX), math.floor(-map.camY))
+
+    -- love.graphics.printf('Welcome to Mario!', 0, 30, VIRTUAL_WIDTH, 'center')
 
     map:render()
     push:apply('end')
