@@ -109,29 +109,13 @@ end
 
 
 function Map:update(dt)
+    self.player:update(dt)
     self.camX = math.max(0,
         math.min(self.player.x - VIRTUAL_WIDTH / 2,
-            math.min(self.mapWidthPixels - VIRTUAL_WIDTH, self.player.x)
+            math.min((self.mapWidthPixels - VIRTUAL_WIDTH), self.player.x)
         )
     )
-    
-    --[[
-    -- check up, left, down, right movement
-    if love.keyboard.isDown('w') then
-        -- up
-        self.camY = math.max(0, math.floor(self.camY + -SCROLL_SPEED * dt))
-    elseif love.keyboard.isDown('a') then
-        -- left
-        self.camX = math.max(0, math.floor(self.camX + -SCROLL_SPEED * dt))
-    elseif love.keyboard.isDown('s') then
-        -- down
-        self.camY = math.min(self.mapHeightPixels - VIRTUAL_HEIGHT, math.floor(self.camY + SCROLL_SPEED * dt))
-    elseif love.keyboard.isDown('d') then
-        -- right
-        self.camX = math.min(self.mapWidthPixels - VIRTUAL_WIDTH, math.floor(self.camX + SCROLL_SPEED * dt))
-    end
-    ]]
-    self.player:update(dt)
+    print(self.camX)
 end
 
 function Map:render()
@@ -140,8 +124,16 @@ function Map:render()
             local index = self:getTile(x, y)
             if index > 0 then
                 local tile = self.tileSprites[self:getTile(x, y)]
-                love.graphics.draw(self.spritessheet, tile,
-                    (x-1) * self.tileWidth, (y-1) * self.tileHeight)
+                love.graphics.draw(
+                    self.spritessheet,
+                    tile,
+                    (x-1) * self.tileWidth,
+                    (y-1) * self.tileHeight
+                )
+                -- love.graphics.print(tostring(x),
+                --     (x-1) * self.tileWidth,
+                --     (y-1) * self.tileHeight
+                -- )
             end
         end
     end

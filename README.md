@@ -38,3 +38,8 @@ Each video is managed with in a new feature branch that is merged on the develop
 + Animate the avatar movement
 + Walk to the left and to the right
 
+# Mario 7
+
++ Add Jump behavior
++ Add gravity
+
