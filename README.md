@@ -18,3 +18,8 @@ Each video is managed with in a new feature branch that is merged on the develop
 
 + Move map using w,a,s,d keys
 + Add map borders
+
+## Mario 3
+
++ Create radom elements on the map
+
