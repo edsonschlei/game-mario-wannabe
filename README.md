@@ -23,3 +23,7 @@ Each video is managed with in a new feature branch that is merged on the develop
 
 + Create radom elements on the map
 
+## Mario 4
+
++ Add the alien avatar
++ Add the player class to control the avatar

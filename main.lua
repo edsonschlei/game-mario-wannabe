@@ -1,5 +1,5 @@
 --[[
-    
+    A mario wannabe game :)
 ]]
 
 Class = require 'class'
