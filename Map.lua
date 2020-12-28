@@ -139,3 +139,9 @@ function Map:render()
     end
     self.player:render()
 end
+
+function Map:tileAt(x,y)
+    local lx = math.floor(x / self.tileWidth) + 1
+    local ly = math.floor(y / self.tileHeight) + 1
+    return self:getTile(lx, ly)
+end

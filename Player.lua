@@ -121,6 +121,25 @@ function Player:update(dt)
     self.x = self.x + self.dx * dt
     self.y = self.y + self.dy * dt
     -- self.x = math.min(self.map.mapWidthPixels - self.width, self.x + MOVE_SPEED * dt)
+
+    if self.dy < 0 then
+        if self.map:tileAt(self.x, self.y) ~= TILE_EMPTY or
+            self.map:tileAt(self.x + self.width -1, self.y) ~= TILE_EMPTY then
+            self.dy = 0
+
+            if self.map:tileAt(self.x, self.y) == JUMP_BLOCK then
+                local lx = math.floor(self.x / self.map.tileWidth) + 1
+                local ly = math.floor(self.y / self.map.tileHeight) + 1
+                self.map:setTile(lx, ly, JUMP_BLOCK_HIT)
+            end
+            if self.map:tileAt(self.x + self.width -1, self.y) == JUMP_BLOCK then
+                local lx = math.floor((self.x + self.width -1) / self.map.tileWidth) + 1
+                local ly = math.floor(self.y / self.map.tileHeight) + 1
+                self.map:setTile(lx, ly, JUMP_BLOCK_HIT)
+            end
+        end
+    end
+
 end
 
 function Player:render()
