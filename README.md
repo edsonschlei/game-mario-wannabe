@@ -28,18 +28,24 @@ Each video is managed with in a new feature branch that is merged on the develop
 + Add the alien avatar
 + Add the player class to control the avatar
 
-# Mario 5
+## Mario 5
 
 + Move the avatar to left and right
 + Move the map when necessary
 
-# Mario 6
+## Mario 6
 
 + Animate the avatar movement
 + Walk to the left and to the right
 
-# Mario 7
+## Mario 7
 
 + Add Jump behavior
 + Add gravity
+
+## Mario 8
+
++ Collision detection
++ Change the hit block
+
 
