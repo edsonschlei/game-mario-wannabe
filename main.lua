@@ -13,11 +13,12 @@ VIRTUAL_WIDTH = 432
 VIRTUAL_HEIGHT = 243
 
 
-
 --[[
     init global resources
 ]]
 function love.load()
+    math.randomseed(os.time())
+
     map = Map()
 
     love.window.setTitle('Mario Wannabe!')
