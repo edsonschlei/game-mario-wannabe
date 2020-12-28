@@ -14,3 +14,7 @@ Each video is managed with in a new feature branch that is merged on the develop
 
 + Scroll the screen to the left
 
+## Mario 2
+
++ Move map using w,a,s,d keys
++ Add map borders
