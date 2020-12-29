@@ -3,6 +3,9 @@
         "love",
         "push",
         "map",
-        "generateQuads"
+        "generateQuads",
+        "unpack",
+        "class_commons",
+        "common"
     ]
 }
