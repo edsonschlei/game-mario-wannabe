@@ -4,7 +4,7 @@ require 'Animation'
 Player = Class{}
 
 local MOVE_SPEED = 80
-local JUMP_VELOCITY = 400
+local JUMP_VELOCITY = 600
 local GRAVITY = 40
 
 function Player:init(map)
@@ -56,7 +56,7 @@ function Player:init(map)
             if love.keyboard.wasPressed('space') then
                 self.dy = -JUMP_VELOCITY
                 self.state = 'jumping'
-                return
+                self.sounds['jump']:play()
             elseif love.keyboard.isDown('a') then
                 -- left
                 self.dx = -MOVE_SPEED
@@ -76,6 +76,7 @@ function Player:init(map)
             if love.keyboard.wasPressed('space') then
                 self.dy = -JUMP_VELOCITY
                 self.state = 'jumping'
+                self.sounds['jump']:play()
             elseif love.keyboard.isDown('a') then
                 -- left
                 self.dx = -MOVE_SPEED
@@ -123,6 +124,14 @@ function Player:init(map)
             self:checkLeftCollision()
         end
     }
+
+    -- sound effects
+    self.sounds = {
+        ['jump'] = love.audio.newSource('sounds/jump.wav', 'static'),
+        ['hit'] = love.audio.newSource('sounds/hit.wav', 'static'),
+        ['coin'] = love.audio.newSource('sounds/coin.wav', 'static')
+    }
+
 end
 
 function Player:update(dt)
@@ -139,11 +148,24 @@ function Player:update(dt)
 
         if tileAtTopLeft.id ~= TILE_EMPTY or tileAtTopRight.id ~= TILE_EMPTY then
             self.dy = 0
+            local playCoin = false
+            local playHit = false
             if tileAtTopLeft.id == JUMP_BLOCK then
                 self.map:setTile(tileAtTopLeft.x, tileAtTopLeft.y, JUMP_BLOCK_HIT)
+                playCoin = true
+            else
+                playHit = true
             end
             if tileAtTopRight.id == JUMP_BLOCK then
                 self.map:setTile(tileAtTopRight.x, tileAtTopRight.y, JUMP_BLOCK_HIT)
+                playCoin = true
+            else
+                playHit = true
+            end
+            if playCoin then
+                self.sounds['coin']:play()
+            elseif playHit then
+                self.sounds['hit']:play()
             end
         end
     end
