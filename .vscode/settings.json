@@ -1,0 +1,11 @@
+{
+    "Lua.diagnostics.globals": [
+        "love",
+        "push",
+        "map",
+        "generateQuads",
+        "unpack",
+        "class_commons",
+        "common"
+    ]
+}
