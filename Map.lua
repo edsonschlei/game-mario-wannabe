@@ -138,7 +138,6 @@ function Map:update(dt)
             math.min((self.mapWidthPixels - VIRTUAL_WIDTH), self.player.x)
         )
     )
-    -- print(self.camX)
 end
 
 function Map:render()

@@ -74,3 +74,9 @@ Each video is managed with in a new feature branch that is merged on the develop
 ## [Löve](https://love2d.org/)
 + love --version
 + LOVE 11.3 (Mysterious Mysteries)
+
+# How to execute
+
++ checkout the git project
++ cd game-mario-wannabe
++ love .
