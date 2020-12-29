@@ -48,7 +48,7 @@ function Player:init(map)
         }
     }
 
-    self.animation = self.animations['idle']
+    self.animation = self.animations[self.state]
 
     -- state of the avatar
     self.behaviors = {
@@ -56,42 +56,49 @@ function Player:init(map)
             if love.keyboard.wasPressed('space') then
                 self.dy = -JUMP_VELOCITY
                 self.state = 'jumping'
-                self.animation = self.animations['jumping']
-            end
-            if love.keyboard.isDown('a') then
+                return
+            elseif love.keyboard.isDown('a') then
                 -- left
-                self.direction = 'left'
                 self.dx = -MOVE_SPEED
-                self.animation = self.animations['walking']
+                self.direction = 'left'
+                self.state = 'walking'
             elseif love.keyboard.isDown('d') then
                 -- right
-                self.direction = 'right'
                 self.dx = MOVE_SPEED
-                self.animation = self.animations['walking']
+                self.direction = 'right'
+                self.state = 'walking'
             else
                 self.dx = 0
-                self.animation = self.animations['idle']
+                self.state = 'idle'
             end
         end,
         ['walking'] = function (dt)
             if love.keyboard.wasPressed('space') then
                 self.dy = -JUMP_VELOCITY
                 self.state = 'jumping'
-                self.animation = self.animations['jumping']
-            end
-            if love.keyboard.isDown('a') then
+            elseif love.keyboard.isDown('a') then
                 -- left
-                self.direction = 'left'
                 self.dx = -MOVE_SPEED
-                self.animation = self.animations['walking']
+                self.direction = 'left'
+                self.state = 'walking'
             elseif love.keyboard.isDown('d') then
                 -- right
-                self.direction = 'right'
                 self.dx = MOVE_SPEED
-                self.animation = self.animations['walking']
+                self.direction = 'right'
+                self.state = 'walking'
             else
                 self.dx = 0
-                self.animation = self.animations['idle']
+                self.state = 'idle'
+            end
+
+            self:checkRightCollision()
+            self:checkLeftCollision()
+
+            -- check collision bellow
+            local tileBellowLeft = self.map:tileAt(self.x, self.y + self.height)
+            local tileBellowRight = self.map:tileAt(self.x + self.width-1, self.y + self.height)
+            if not self.map:collides(tileBellowLeft) and not self.map:collides(tileBellowRight) then
+                self.state = 'jumping'
             end
         end,
         ['jumping'] = function (dt)
@@ -105,41 +112,41 @@ function Player:init(map)
             end
             self.dy = self.dy + GRAVITY
 
-            if self.y >= map.tileHeight * (map.mapHeight / 2 -1) - self.height then
-                self.y = map.tileHeight * (map.mapHeight / 2 -1) - self.height
+            local tileBellowLeft = self.map:tileAt(self.x, self.y + self.height)
+            local tileBellowRight = self.map:tileAt(self.x + self.width-1, self.y + self.height)
+            if self.map:collides(tileBellowLeft) or self.map:collides(tileBellowRight) then
                 self.dy = 0
                 self.state = 'idle'
-                self.animation = self.animations['idle']
+                self.y = (tileBellowLeft.y - 1) * self.map.tileHeight - self.height
             end
+            self:checkRightCollision()
+            self:checkLeftCollision()
         end
     }
 end
 
 function Player:update(dt)
     self.behaviors[self.state](dt)
+    print(self.state)
+    self.animation = self.animations[self.state]
     self.animation:update(dt)
     self.x = self.x + self.dx * dt
     self.y = self.y + self.dy * dt
-    -- self.x = math.min(self.map.mapWidthPixels - self.width, self.x + MOVE_SPEED * dt)
 
     if self.dy < 0 then
-        if self.map:tileAt(self.x, self.y) ~= TILE_EMPTY or
-            self.map:tileAt(self.x + self.width -1, self.y) ~= TILE_EMPTY then
-            self.dy = 0
+        local tileAtTopLeft = self.map:tileAt(self.x, self.y)
+        local tileAtTopRight = self.map:tileAt(self.x + self.width -1, self.y)
 
-            if self.map:tileAt(self.x, self.y) == JUMP_BLOCK then
-                local lx = math.floor(self.x / self.map.tileWidth) + 1
-                local ly = math.floor(self.y / self.map.tileHeight) + 1
-                self.map:setTile(lx, ly, JUMP_BLOCK_HIT)
+        if tileAtTopLeft.id ~= TILE_EMPTY or tileAtTopRight.id ~= TILE_EMPTY then
+            self.dy = 0
+            if tileAtTopLeft.id == JUMP_BLOCK then
+                self.map:setTile(tileAtTopLeft.x, tileAtTopLeft.y, JUMP_BLOCK_HIT)
             end
-            if self.map:tileAt(self.x + self.width -1, self.y) == JUMP_BLOCK then
-                local lx = math.floor((self.x + self.width -1) / self.map.tileWidth) + 1
-                local ly = math.floor(self.y / self.map.tileHeight) + 1
-                self.map:setTile(lx, ly, JUMP_BLOCK_HIT)
+            if tileAtTopRight.id == JUMP_BLOCK then
+                self.map:setTile(tileAtTopRight.x, tileAtTopRight.y, JUMP_BLOCK_HIT)
             end
         end
     end
-
 end
 
 function Player:render()
@@ -155,4 +162,28 @@ function Player:render()
         self.height / 2
     )
     -- love.graphics.print(self.x, 10 , 10)
+end
+
+function Player:checkRightCollision()
+    if self.dx > 0 then
+        local tileTopRight = self.map:tileAt(self.x + self.width , self.y)
+        local tileBottomRight = self.map:tileAt(self.x + self.width, self.y + self.height - 1)
+        if self.map:collides(tileTopRight) or self.map:collides(tileBottomRight) then
+            self.dx = 0
+            self.x = (tileTopRight.x -1) * self.map.tileWidth - self.width
+        end
+    end
+end
+
+function Player:checkLeftCollision()
+    -- dx < 0 means wallking to the left
+    if self.dx < 0 then
+        local tileTopLeft = self.map:tileAt(self.x - 1, self.y)
+        local tileBottomLeft = self.map:tileAt(self.x -1, self.y + self.height -1)
+        if self.map:collides(tileTopLeft) or self.map:collides(tileBottomLeft) then
+            -- stop walking
+            self.dx = 0
+            self.x = tileTopLeft.x * self.map.tileWidth
+        end
+    end
 end

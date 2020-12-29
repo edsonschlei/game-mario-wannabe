@@ -72,7 +72,7 @@ function Map:init()
             end
             x = x + 1
         else
-            x = x + 1
+            x = x + 2
         end
     end
     -- self:createFloor()
@@ -115,7 +115,7 @@ function Map:update(dt)
             math.min((self.mapWidthPixels - VIRTUAL_WIDTH), self.player.x)
         )
     )
-    print(self.camX)
+    -- print(self.camX)
 end
 
 function Map:render()
@@ -140,8 +140,27 @@ function Map:render()
     self.player:render()
 end
 
-function Map:tileAt(x,y)
+function Map:tileAt(x, y)
     local lx = math.floor(x / self.tileWidth) + 1
     local ly = math.floor(y / self.tileHeight) + 1
-    return self:getTile(lx, ly)
+    local ltile = self:getTile(lx, ly)
+
+    return {
+        x = lx,
+        y = ly,
+        id = ltile
+    }
+end
+
+function Map:collides(tile)
+    local collidables = {
+        TILE_BRICK, JUMP_BLOCK, JUMP_BLOCK_HIT,
+        MUSHROOM_TOP, MUSHROOM_BOTTOM
+    }
+    for k, v in ipairs(collidables) do
+        if tile.id == v then
+            return true
+        end
+    end
+    return false
 end
