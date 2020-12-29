@@ -53,3 +53,7 @@ Each video is managed with in a new feature branch that is merged on the develop
 + Fall in a gap
 + Collision at left and right
 + Jump on objects
+
+## Mario 10
+
++ play sounds: background, jump, coin and hit

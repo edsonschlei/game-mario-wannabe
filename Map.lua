@@ -22,6 +22,7 @@ JUMP_BLOCK_HIT = 9
 local SCROLL_SPEED = 62
 
 function Map:init()
+    self.music = love.audio.newSource('sounds/music.wav', 'static')
     self.spritessheet = love.graphics.newImage('graphics/spritesheet.png')
     self.tileWidth = 16
     self.tileHeight = 16
@@ -77,6 +78,11 @@ function Map:init()
     end
     -- self:createFloor()
     self.player = Player(self)
+
+    -- start the background music
+    self.music:setLooping(true)
+    self.music:setVolume(0.15)
+    self.music:play()
 end
 
 function Map:fillFloor(x)
