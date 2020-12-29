@@ -57,7 +57,7 @@ function love.draw()
 
     love.graphics.translate(math.floor(-map.camX + 0.5), math.floor(-map.camY + 0.5))
 
-    -- love.graphics.printf('Welcome to Mario!', 0, 30, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf('Welcome to Mario Wannabe!', 0, 30, VIRTUAL_WIDTH, 'center')
 
     map:render()
     push:apply('end')
