@@ -18,7 +18,7 @@ function Player:init(map)
     self.dx = 0
     self.dy = 0
 
-    self.x = map.tileWidth * 10
+    self.x = map.tileWidth * 2
     self.y = map.tileHeight * (map.mapHeight / 2 -1) - self.height
 
     self.texture = love.graphics.newImage('graphics/blue_alien.png')
@@ -43,6 +43,20 @@ function Player:init(map)
             texture = self.texture,
             frames = {
                 self.frames[3]
+            },
+            interval = 1
+        },
+        ['touchFlagpole'] = Animation {
+            texture = self.texture,
+            frames = {
+                self.frames[9], self.frames[10], self.frames[11]
+            },
+            interval = 0.15
+        },
+        ['fall'] = Animation {
+            texture = self.texture,
+            frames = {
+                self.frames[1]
             },
             interval = 1
         }
@@ -94,6 +108,7 @@ function Player:init(map)
 
             self:checkRightCollision()
             self:checkLeftCollision()
+            self:checkTouchFlagpole()
 
             -- check collision bellow
             local tileBellowLeft = self.map:tileAt(self.x, self.y + self.height)
@@ -101,9 +116,11 @@ function Player:init(map)
             if not self.map:collides(tileBellowLeft) and not self.map:collides(tileBellowRight) then
                 self.state = 'jumping'
             end
+            if self.x < 0 then
+                self.x = 0
+            end
         end,
         ['jumping'] = function (dt)
-            print('Jumping')
             if love.keyboard.isDown('a') then
                 self.direction = 'left'
                 self.dx = -MOVE_SPEED
@@ -122,6 +139,21 @@ function Player:init(map)
             end
             self:checkRightCollision()
             self:checkLeftCollision()
+            self:checkTouchFlagpole()
+            self:checkFall()
+            if self.x < 0 then
+                self.x = 0
+            end
+        end,
+        ['touchFlagpole'] = function (dt)
+            self.dx = 0
+            self.dy = 0
+            -- local tileBellowLeft = self.map:tileAt(self.x, self.y + self.height)
+            -- self.x = tileBellowLeft.x * self.map.tileWidth
+        end,
+        ['fall'] = function (dt)
+            self.dx = 0
+            self.dy = 0
         end
     }
 
@@ -136,7 +168,6 @@ end
 
 function Player:update(dt)
     self.behaviors[self.state](dt)
-    print(self.state)
     self.animation = self.animations[self.state]
     self.animation:update(dt)
     self.x = self.x + self.dx * dt
@@ -183,7 +214,6 @@ function Player:render()
         self.width / 2,
         self.height / 2
     )
-    -- love.graphics.print(self.x, 10 , 10)
 end
 
 function Player:checkRightCollision()
@@ -207,5 +237,29 @@ function Player:checkLeftCollision()
             self.dx = 0
             self.x = tileTopLeft.x * self.map.tileWidth
         end
+    end
+end
+
+--[[
+    Check if the player touch the flagpole
+]]
+function Player:checkTouchFlagpole()
+    local tileTopLeft = self.map:tileAt(self.x - 1, self.y)
+    local tileBottomLeft = self.map:tileAt(self.x -1, self.y + self.height -1)
+    local tileTopRight = self.map:tileAt(self.x + self.width , self.y)
+    local tileBottomRight = self.map:tileAt(self.x + self.width, self.y + self.height - 1)
+    if self.map:touchFlagpole(tileTopLeft) or self.map:touchFlagpole(tileBottomLeft) then
+        self.state = 'touchFlagpole'
+    end
+    if self.map:touchFlagpole(tileTopRight) or self.map:touchFlagpole(tileBottomRight) then
+        self.state = 'touchFlagpole'
+    end
+end
+
+function Player:checkFall()
+    local currentTile = self.map:tileAt(self.x, self.y)
+    local y = self.map.mapHeight / 2
+    if (currentTile.y > y) then
+        self.state = 'fall'
     end
 end

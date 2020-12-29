@@ -44,6 +44,13 @@ end
 ]]
 function love.update(dt)
     map:update(dt)
+    if map.player.state == 'touchFlagpole' or map.player.state == 'fall' then
+        if love.keyboard.wasPressed('return') then
+            map.music:stop()
+            map = Map()
+        end
+    end
+
     love.keyboard.keysPressed = {}
 end
 
@@ -57,7 +64,15 @@ function love.draw()
 
     love.graphics.translate(math.floor(-map.camX + 0.5), math.floor(-map.camY + 0.5))
 
-    love.graphics.printf('Welcome to Mario Wannabe!', 0, 30, VIRTUAL_WIDTH, 'center')
+    if map.player.state == 'touchFlagpole' then
+        love.graphics.printf('You won!', map.camX , 40, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press enter to restart!', map.camX , 60, VIRTUAL_WIDTH, 'center')
+    end
+
+    if map.player.state == 'fall' then
+        love.graphics.printf('You LOST!', map.camX , 40, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press enter to restart!', map.camX , 60, VIRTUAL_WIDTH, 'center')
+    end
 
     map:render()
     push:apply('end')

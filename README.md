@@ -57,3 +57,20 @@ Each video is managed with in a new feature branch that is merged on the develop
 ## Mario 10
 
 + play sounds: background, jump, coin and hit
+
+## Mario 11
+
++ Add a pyramid of blocks to the generated level.
++ Add a flag at the end of the level that either loads a new level or simply displays a victory message to the screen.
++ Add fall and lost
++ Add option to press return to restart the game
+
+# Implementation
+
+## [Lua](https://www.lua.org/manual/5.3/)
++ lua -v
++ Lua 5.3.3  Copyright (C) 1994-2016 Lua.org, PUC-Rio
+
+## [Löve](https://love2d.org/)
++ love --version
++ LOVE 11.3 (Mysterious Mysteries)
