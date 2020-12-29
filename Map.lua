@@ -19,6 +19,10 @@ MUSHROOM_BOTTOM = 11
 JUMP_BLOCK = 5
 JUMP_BLOCK_HIT = 9
 
+FLAGPOLE_TOP = 8
+FLAGPOLE_MIDDLE = 12
+FLAGPOLE_BOTTOM = 16
+
 local SCROLL_SPEED = 62
 
 function Map:init()
@@ -26,7 +30,7 @@ function Map:init()
     self.spritessheet = love.graphics.newImage('graphics/spritesheet.png')
     self.tileWidth = 16
     self.tileHeight = 16
-    self.mapWidth = 30
+    self.mapWidth = 100
     self.mapHeight = 28
     self.camX = 0
     self.camY = -3
@@ -83,6 +87,20 @@ function Map:init()
     self.music:setLooping(true)
     self.music:setVolume(0.15)
     self.music:play()
+
+    self:addFlagpole()
+    self:addPyramid()
+
+    self.animations = {
+        ['flag'] = Animation {
+            texture = self.spritessheet,
+            frames = {
+                self.tileSprites[13], self.tileSprites[14], self.tileSprites[15]
+            },
+            interval = 0.15
+        }
+    }
+    self.animation = self.animations['flag']
 end
 
 function Map:fillFloor(x)
@@ -99,8 +117,6 @@ function Map:createFloor()
     end
 end
 
-
-
 function Map:getIndex(x, y)
     return (y - 1) * self.mapWidth + x
 end
@@ -115,6 +131,7 @@ end
 
 
 function Map:update(dt)
+    self.animation:update(dt)
     self.player:update(dt)
     self.camX = math.max(0,
         math.min(self.player.x - VIRTUAL_WIDTH / 2,
@@ -136,14 +153,16 @@ function Map:render()
                     (x-1) * self.tileWidth,
                     (y-1) * self.tileHeight
                 )
-                -- love.graphics.print(tostring(x),
-                --     (x-1) * self.tileWidth,
-                --     (y-1) * self.tileHeight
-                -- )
             end
         end
     end
     self.player:render()
+    love.graphics.draw(self.animation.texture,
+        self.animation:getCurrentFrame(),
+        self.flagX,
+        self.flagY
+    )
+
 end
 
 function Map:tileAt(x, y)
@@ -169,4 +188,48 @@ function Map:collides(tile)
         end
     end
     return false
+end
+
+--[[
+    Return true when the tile is one of the flagpole
+]]
+function Map:touchFlagpole(tile)
+    local collidables = {
+        FLAGPOLE_BOTTOM, FLAGPOLE_MIDDLE, FLAGPOLE_TOP
+    }
+    for k, v in ipairs(collidables) do
+        if tile.id == v then
+            return true
+        end
+    end
+    return false
+end
+
+--[[
+    Create the winning flagpole
+]]
+function Map:addFlagpole()
+    local x = self.mapWidth - 3
+    local y = self.mapHeight / 2 -1
+    self:setTile(x, y, FLAGPOLE_BOTTOM)
+    self:setTile(x, y -1, FLAGPOLE_MIDDLE)
+    self:setTile(x, y -2, FLAGPOLE_MIDDLE)
+    self:setTile(x, y -3, FLAGPOLE_MIDDLE)
+    self:setTile(x, y -4, FLAGPOLE_MIDDLE)
+    self:setTile(x, y -5, FLAGPOLE_TOP)
+    self.flagX = ((x - 1 ) * self.tileWidth) + (self.tileWidth / 2)
+    self.flagY = (y - 6) * self.tileHeight + (self.tileHeight / 2)
+end
+
+--[[
+    Add a pyramid on the map
+]]
+function Map:addPyramid()
+    local x = math.floor(self.mapWidth * 0.65)
+    local y = math.floor(self.mapHeight / 2 -1)
+    for line = 0, 4 do
+        for col = line, 4 do
+            self:setTile(x + col, y - line, TILE_BRICK)
+        end
+    end
 end
